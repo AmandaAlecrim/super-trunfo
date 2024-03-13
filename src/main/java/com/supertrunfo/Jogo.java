@@ -48,12 +48,12 @@ public class Jogo {
 
         // Jogador joga uma carta
         Carta cartaJogador = escolherCarta(maoJogador);
-        System.out.println("Jogador jogou a carta: " + cartaJogador.getNome());
+        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getNome() + " |força:" + cartaJogador.getForca() + " |inteligência: " + cartaJogador.getInteligencia() + " |velocidade: " + cartaJogador.getVelocidade() + "|");
 
         // CPU joga uma carta
         Random random = new Random();
         Carta cartaCPU = maoCPU.get(random.nextInt(maoCPU.size()));
-        System.out.println("CPU jogou a carta: " + cartaCPU.getNome());
+        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getNome() + " |força:" + cartaCPU.getForca() + " |inteligência: " + cartaCPU.getInteligencia() + " |velocidade: " + cartaCPU.getVelocidade() + "|");
 
         // Comparar atributos
         int valorAtributoJogador = cartaJogador.getAtributo(atributo);
@@ -81,7 +81,7 @@ public class Jogo {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o número da carta que deseja jogar:");
         for (int i = 0; i < mao.size(); i++) {
-            System.out.println((i + 1) + ". " + mao.get(i).getNome());
+            System.out.println((i + 1) + ". " + mao.get(i).getNome() + " |força:" + mao.get(i).getForca() + " |inteligência: " + mao.get(i).getInteligencia() + " |velocidade: " + mao.get(i).getVelocidade() + "|");
         }
         int escolha = scanner.nextInt();
         return mao.remove(escolha - 1);
