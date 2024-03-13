@@ -11,6 +11,7 @@ public class Jogo {
     private int rodadasVencidasJogador;
     private int rodadasVencidasCPU;
     private int rodadasEmpatadas;
+    private List<String> atributosDisponiveis = new ArrayList<>();
 
     public Jogo(List<Carta> baralho) {
         this.baralho = baralho;
@@ -19,6 +20,10 @@ public class Jogo {
     }
 
     public void iniciarPartida() {
+        atributosDisponiveis.add("Força");
+        atributosDisponiveis.add("Inteligência");
+        atributosDisponiveis.add("Velocidade");
+
         // Distribuir cartas para o jogador e CPU
         for (int i = 0; i < 3; i++) {
             maoJogador.add(baralho.remove(0));
@@ -43,8 +48,10 @@ public class Jogo {
 
     private void jogarRodada() {
         // Escolher um atributo aleatório para jogar
-        int atributo = escolherAtributo();
+        int indiceAtributo = escolherAtributo(atributosDisponiveis);
+        String atributo = atributosDisponiveis.get(indiceAtributo);
         System.out.println("Você escolheu o atributo: " + atributo);
+        atributosDisponiveis.remove(indiceAtributo);
 
         // Jogador joga uma carta
         Carta cartaJogador = escolherCarta(maoJogador);
@@ -56,8 +63,8 @@ public class Jogo {
         System.out.println("CPU jogou a carta:\n    " + cartaCPU.getNome() + " |força:" + cartaCPU.getForca() + " |inteligência: " + cartaCPU.getInteligencia() + " |velocidade: " + cartaCPU.getVelocidade() + "|");
 
         // Comparar atributos
-        int valorAtributoJogador = cartaJogador.getAtributo(atributo);
-        int valorAtributoCPU = cartaCPU.getAtributo(atributo);
+        int valorAtributoJogador = cartaJogador.getAtributo(indiceAtributo);
+        int valorAtributoCPU = cartaCPU.getAtributo(indiceAtributo);
         if (valorAtributoJogador > valorAtributoCPU) {
             System.out.println("Você venceu a rodada!");
             rodadasVencidasJogador++;
@@ -70,11 +77,14 @@ public class Jogo {
         }
     }
 
-    private int escolherAtributo() {
+    private int escolherAtributo(List<String> atributosDisponiveis) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Escolha o atributo (0 para Força, 1 para Inteligência, 2 para Velocidade): ");
+        System.out.println("Escolha o atributo: ");
+        for (int i = 0; i < atributosDisponiveis.size(); i++) {
+            System.out.println((i + 1) + ". " + atributosDisponiveis.get(i));
+        }
         int atributo = scanner.nextInt();
-        return atributo;
+        return atributo -1;
     }
 
     private Carta escolherCarta(List<Carta> mao) {
