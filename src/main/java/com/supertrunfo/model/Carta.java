@@ -8,7 +8,6 @@ public class Carta {
     private int velocidade;
 
     public Carta() {
-        this.id = 0; // Valor padrão para o id
         this.nome = ""; // Valor padrão para o nome
         this.forca = 0; // Valor padrão para a força
         this.inteligencia = 0; // Valor padrão para a inteligência
