@@ -51,19 +51,17 @@ public class Jogo {
             jogarRodada();
         }
 
-        partida.setRoundsVencidosJogador(rodadasVencidasJogador);
-        partida.setRoundsVencidosCPU(rodadasVencidasCPU);
-        partida.setRoundsEmpatados(rodadasEmpatadas);
-
         // Verificar o vencedor da partida
         if (rodadasVencidasJogador > rodadasVencidasCPU) {
             System.out.println("Você venceu a partida!");
+            partida.setResultado("Você venceu a partida!");
         } else if (rodadasVencidasJogador < rodadasVencidasCPU) {
             System.out.println("CPU venceu a partida!");
+            partida.setResultado("CPU venceu a partida!");
         } else {
             System.out.println("A partida terminou em empate!");
+            partida.setResultado("A partida terminou em empate!");
         }
-        partida.setResultado("Partida concluída.");
         try {
             partidaDAO.atualizarPartida(partida);
         } catch (SQLException e) {
@@ -114,6 +112,14 @@ public class Jogo {
         } else {
             System.out.println("Rodada empatada!");
             rodadasEmpatadas++;
+        }
+        partida.setRoundsVencidosJogador(rodadasVencidasJogador);
+        partida.setRoundsVencidosCPU(rodadasVencidasCPU);
+        partida.setRoundsEmpatados(rodadasEmpatadas);
+        try {
+            partidaDAO.atualizarPartida(partida);
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
