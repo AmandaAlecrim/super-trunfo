@@ -17,7 +17,7 @@ public class Partida {
         this.roundsVencidosJogador = 0; // Valor padrão para os rounds vencidos pelo jogador
         this.roundsVencidosCPU = 0; // Valor padrão para os rounds vencidos pela CPU
         this.roundsEmpatados = 0; // Valor padrão para os rounds empatados
-        this.resultado = "Em andamento"; // Resultado vazio
+        this.resultado = "Em andamento"; // Resultado em andamento
         this.data = new Date(); // Data de hoje
         this.forcaUtilizada = false; // Forca não utilizada
         this.inteligenciaUtilizada = false; // Inteligência não utilizada
