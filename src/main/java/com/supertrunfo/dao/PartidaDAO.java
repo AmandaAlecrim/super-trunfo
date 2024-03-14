@@ -6,28 +6,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PartidaDAO {
+public class PartidaDAO extends BaseDAO{
     private static Connection conexao;
-
-    private static final String URL = "jdbc:postgresql://localhost:5432/super_trunfo";
-    private static final String USUARIO = "postgres";
-    private static final String SENHA = "postgres";
-
-    public static Connection obterConexao() throws SQLException {
-        return DriverManager.getConnection(URL, USUARIO, SENHA);
-    }
 
     public void inserirPartida(Partida partida) throws SQLException {
         this.conexao = obterConexao();
 
-        // Captura ID da partida
-        String sqlid = "SELECT nextval('partida_id_seq')";
-        PreparedStatement ps1 = conexao.prepareStatement(sqlid);
-        ResultSet rs = ps1.executeQuery();
-        if (rs.next()) {
-            int id = rs.getInt(1);
-            partida.setId(id);
-        }
+        buscarProximoValorSequence(partida);
 
         String sql = "INSERT INTO partida (rounds_vencidos_jogador, rounds_vencidos_cpu, rounds_empatados, resultado, data, forca_utilizada, inteligencia_utilizada, velocidade_utilidade, id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
         PreparedStatement ps = conexao.prepareStatement(sql);
@@ -85,6 +70,16 @@ public class PartidaDAO {
         ps.setInt(9, partida.getId());
         ps.executeUpdate();
         ps.close();
+    }
+
+    public void buscarProximoValorSequence(Partida partida) throws SQLException {
+        String sqlid = "SELECT nextval('partida_id_seq')";
+        PreparedStatement ps1 = conexao.prepareStatement(sqlid);
+        ResultSet rs = ps1.executeQuery();
+        if (rs.next()) {
+            int id = rs.getInt(1);
+            partida.setId(id);
+        }
     }
 }
 

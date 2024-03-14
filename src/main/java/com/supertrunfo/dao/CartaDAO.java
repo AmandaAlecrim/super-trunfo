@@ -8,16 +8,8 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartaDAO {
+public class CartaDAO extends BaseDAO{
     private static Connection conexao;
-
-    private static final String URL = "jdbc:postgresql://localhost:5432/super_trunfo";
-    private static final String USUARIO = "postgres";
-    private static final String SENHA = "postgres";
-
-    public static Connection obterConexao() throws SQLException {
-        return DriverManager.getConnection(URL, USUARIO, SENHA);
-    }
 
     public void inserirCarta(Carta carta) throws SQLException, ForcaExcedidaException, NomeDuplicadoException {
 
