@@ -61,13 +61,4 @@ public class Carta {
     public void setVelocidade(int velocidade) {
         this.velocidade = velocidade;
     }
-
-    public int getAtributo(int indice) {
-        switch (indice) {
-            case 0: return forca;
-            case 1: return inteligencia;
-            case 2: return velocidade;
-            default: throw new IllegalArgumentException("Índice de atributo inválido: " + indice);
-        }
-    }
 }

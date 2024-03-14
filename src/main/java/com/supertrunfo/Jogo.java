@@ -79,21 +79,8 @@ public class Jogo {
 
     private void jogarRodada() throws SQLException {
         // Escolher um atributo para jogar
-        int indiceAtributo = escolherAtributo(partida.isForcaUtilizada(), partida.isInteligenciaUtilizada(), partida.isVelocidadeUtilizada());
-
-        // Adicionar atributo a partida
-        String atributo = atributosDisponiveis.get(indiceAtributo);
-        if (atributo.equals("Força")) {
-            partida.setForcaUtilizada(true);
-        } else if (atributo.equals("Inteligência")) {
-            partida.setInteligenciaUtilizada(true);
-        } else if (atributo.equals("Velocidade")) {
-            partida.setVelocidadeUtilizada(true);
-        }
+        char atributo = escolherAtributo(partida);
         partidaDAO.atualizarPartida(partida);
-
-        System.out.println("Você escolheu o atributo: " + atributo);
-        atributosDisponiveis.remove(indiceAtributo);
 
         // Jogador joga uma carta
         CartaPartida cartaJogador = escolherCarta(maoJogador);
@@ -105,14 +92,35 @@ public class Jogo {
         CartaPartida cartaCPU = maoCPU.remove(indiceCartaCPU);
         System.out.println("CPU jogou a carta:\n    " + cartaCPU.getCarta().getNome() + " |força:" + cartaCPU.getCarta().getForca() + " |inteligência: " + cartaCPU.getCarta().getInteligencia() + " |velocidade: " + cartaCPU.getCarta().getVelocidade() + "|");
 
+        int valorAtributoJogador = 0;
+        int valorAtributoCPU = 0;
 
-        // Capturar e atualizar atributos
-        int valorAtributoJogador = cartaJogador.getCarta().getAtributo(indiceAtributo);
-        cartaJogador.setUtilizada(true);
-        cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
-        int valorAtributoCPU = cartaCPU.getCarta().getAtributo(indiceAtributo);
-        cartaCPU.setUtilizada(true);
-        cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
+        // Verificando o caractere de atributo
+        if (atributo == 'F') {
+            valorAtributoJogador = cartaJogador.getCarta().getForca();
+            cartaJogador.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
+            valorAtributoCPU = cartaCPU.getCarta().getForca();
+            cartaCPU.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
+            partida.setForcaUtilizada(true);
+        } else if (atributo == 'I') {
+            valorAtributoJogador = cartaJogador.getCarta().getForca();
+            cartaJogador.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
+            valorAtributoCPU = cartaCPU.getCarta().getForca();
+            cartaCPU.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
+            partida.setInteligenciaUtilizada(true);
+        } else if (atributo == 'V') {
+            valorAtributoJogador = cartaJogador.getCarta().getForca();
+            cartaJogador.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
+            valorAtributoCPU = cartaCPU.getCarta().getForca();
+            cartaCPU.setUtilizada(true);
+            cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
+            partida.setVelocidadeUtilizada(true);
+        }
 
         // Comparar atributos
         if (valorAtributoJogador > valorAtributoCPU) {
@@ -131,27 +139,26 @@ public class Jogo {
         partidaDAO.atualizarPartida(partida);
     }
 
-    private int escolherAtributo(boolean forcaUtilizada, boolean inteligenciaUtilizada, boolean velocidadeUtilizada) {
+    private char escolherAtributo(Partida partida) {
+
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o atributo: ");
-        int opcao = 0;
-        if (!forcaUtilizada) {
-            System.out.println((++opcao) + ". Força");
+        if (!partida.isForcaUtilizada()) {
+            System.out.println("F: Força");
         }
-        if (!inteligenciaUtilizada) {
-            System.out.println((++opcao) + ". Inteligência");
+        if (!partida.isInteligenciaUtilizada()) {
+            System.out.println("I: Inteligência");
         }
-        if (!velocidadeUtilizada) {
-            System.out.println((++opcao) + ". Velocidade");
+        if (!partida.isVelocidadeUtilizada()) {
+            System.out.println("V: Velocidade");
         }
-        int atributo = scanner.nextInt();
+        char opcao = scanner.next().charAt(0);
 
-        while (atributo < 1 || atributo > opcao) {
-            System.out.println("Opção inválida. Escolha novamente: ");
-            atributo = scanner.nextInt();
+        while (opcao != 'F' && opcao != 'I' && opcao != 'V') {
+            System.out.println("O caractere inserido não é válido.");
+            opcao = scanner.next().charAt(0);
         }
-
-        return atributo - 1;
+        return opcao;
     }
 
     private CartaPartida escolherCarta(List<CartaPartida> mao) {
