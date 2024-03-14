@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PartidaDAO extends BaseDAO{
-    private static Connection conexao;
 
     public void inserirPartida(Partida partida) throws SQLException {
         this.conexao = obterConexao();

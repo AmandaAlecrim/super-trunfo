@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CartaDAO extends BaseDAO{
-    private static Connection conexao;
 
     public void inserirCarta(Carta carta) throws SQLException, ForcaExcedidaException, NomeDuplicadoException {
 
