@@ -1,7 +1,9 @@
 package com.supertrunfo;
 
+import com.supertrunfo.dao.CartaPartidaDAO;
 import com.supertrunfo.dao.PartidaDAO;
 import com.supertrunfo.model.Carta;
+import com.supertrunfo.model.CartaPartida;
 import com.supertrunfo.model.Partida;
 
 import java.sql.SQLException;
@@ -9,40 +11,50 @@ import java.util.*;
 
 public class Jogo {
     private List<Carta> baralho;
-    private List<Carta> maoJogador;
-    private List<Carta> maoCPU;
+    private List<CartaPartida> maoJogador = new ArrayList<>();
+    private List<CartaPartida> maoCPU = new ArrayList<>();
     private int rodadasVencidasJogador;
     private int rodadasVencidasCPU;
     private int rodadasEmpatadas;
     private List<String> atributosDisponiveis = new ArrayList<>();
     private PartidaDAO partidaDAO;
     private Partida partida;
+    private CartaPartidaDAO cartaPartidaDAO;
 
     public Jogo(List<Carta> baralho, PartidaDAO partidaDAO) {
         this.baralho = baralho;
-        this.maoJogador = new ArrayList<>();
-        this.maoCPU = new ArrayList<>();
         this.partidaDAO = partidaDAO;
         this.partida = new Partida();
+        this.cartaPartidaDAO = new CartaPartidaDAO();
     }
 
-    public void iniciarPartida() {
+    public void iniciarPartida() throws SQLException {
         atributosDisponiveis.add("Força");
         atributosDisponiveis.add("Inteligência");
         atributosDisponiveis.add("Velocidade");
 
         partida.setData(new Date());
-
-        try {
-            partidaDAO.inserirPartida(partida);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        partidaDAO.inserirPartida(partida);
 
         // Distribuir cartas para o jogador e CPU
         for (int i = 0; i < 3; i++) {
-            maoJogador.add(baralho.remove(0));
-            maoCPU.add(baralho.remove(0));
+            CartaPartida cartaPartida = new CartaPartida();
+            Carta carta = baralho.get(0);
+            cartaPartida.setCarta(carta);
+            cartaPartida.setPartida(partida);
+            cartaPartida.setDoJogador(true);
+            maoJogador.add(cartaPartida);
+            cartaPartidaDAO.inserirCartaPartida(cartaPartida);
+            baralho.remove(0);
+
+            cartaPartida = new CartaPartida();
+            carta = baralho.get(0);
+            cartaPartida.setCarta(carta);
+            cartaPartida.setPartida(partida);
+            cartaPartida.setDoJogador(false);
+            maoCPU.add(cartaPartida);
+            cartaPartidaDAO.inserirCartaPartida(cartaPartida);
+            baralho.remove(0);
         }
 
         // Iniciar rodadas
@@ -62,14 +74,10 @@ public class Jogo {
             System.out.println("A partida terminou em empate!");
             partida.setResultado("A partida terminou em empate!");
         }
-        try {
-            partidaDAO.atualizarPartida(partida);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        partidaDAO.atualizarPartida(partida);
     }
 
-    private void jogarRodada() {
+    private void jogarRodada() throws SQLException {
         // Escolher um atributo para jogar
         int indiceAtributo = escolherAtributo(partida.isForcaUtilizada(), partida.isInteligenciaUtilizada(), partida.isVelocidadeUtilizada());
 
@@ -82,27 +90,31 @@ public class Jogo {
         } else if (atributo.equals("Velocidade")) {
             partida.setVelocidadeUtilizada(true);
         }
-        try {
-            partidaDAO.atualizarPartida(partida);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        partidaDAO.atualizarPartida(partida);
 
         System.out.println("Você escolheu o atributo: " + atributo);
         atributosDisponiveis.remove(indiceAtributo);
 
         // Jogador joga uma carta
-        Carta cartaJogador = escolherCarta(maoJogador);
-        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getNome() + " |força:" + cartaJogador.getForca() + " |inteligência: " + cartaJogador.getInteligencia() + " |velocidade: " + cartaJogador.getVelocidade() + "|");
+        CartaPartida cartaJogador = escolherCarta(maoJogador);
+        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getCarta().getNome() + " |força:" + cartaJogador.getCarta().getForca() + " |inteligência: " + cartaJogador.getCarta().getInteligencia() + " |velocidade: " + cartaJogador.getCarta().getVelocidade() + "|");
 
         // CPU joga uma carta
         Random random = new Random();
-        Carta cartaCPU = maoCPU.get(random.nextInt(maoCPU.size()));
-        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getNome() + " |força:" + cartaCPU.getForca() + " |inteligência: " + cartaCPU.getInteligencia() + " |velocidade: " + cartaCPU.getVelocidade() + "|");
+        int indiceCartaCPU = random.nextInt(maoCPU.size());
+        CartaPartida cartaCPU = maoCPU.remove(indiceCartaCPU);
+        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getCarta().getNome() + " |força:" + cartaCPU.getCarta().getForca() + " |inteligência: " + cartaCPU.getCarta().getInteligencia() + " |velocidade: " + cartaCPU.getCarta().getVelocidade() + "|");
+
+
+        // Capturar e atualizar atributos
+        int valorAtributoJogador = cartaJogador.getCarta().getAtributo(indiceAtributo);
+        cartaJogador.setUtilizada(true);
+        cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
+        int valorAtributoCPU = cartaCPU.getCarta().getAtributo(indiceAtributo);
+        cartaCPU.setUtilizada(true);
+        cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
 
         // Comparar atributos
-        int valorAtributoJogador = cartaJogador.getAtributo(indiceAtributo);
-        int valorAtributoCPU = cartaCPU.getAtributo(indiceAtributo);
         if (valorAtributoJogador > valorAtributoCPU) {
             System.out.println("Você venceu a rodada!");
             rodadasVencidasJogador++;
@@ -116,11 +128,7 @@ public class Jogo {
         partida.setRoundsVencidosJogador(rodadasVencidasJogador);
         partida.setRoundsVencidosCPU(rodadasVencidasCPU);
         partida.setRoundsEmpatados(rodadasEmpatadas);
-        try {
-            partidaDAO.atualizarPartida(partida);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+        partidaDAO.atualizarPartida(partida);
     }
 
     private int escolherAtributo(boolean forcaUtilizada, boolean inteligenciaUtilizada, boolean velocidadeUtilizada) {
@@ -146,11 +154,11 @@ public class Jogo {
         return atributo - 1;
     }
 
-    private Carta escolherCarta(List<Carta> mao) {
+    private CartaPartida escolherCarta(List<CartaPartida> mao) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o número da carta que deseja jogar:");
         for (int i = 0; i < mao.size(); i++) {
-            System.out.println((i + 1) + ". " + mao.get(i).getNome() + " |força:" + mao.get(i).getForca() + " |inteligência: " + mao.get(i).getInteligencia() + " |velocidade: " + mao.get(i).getVelocidade() + "|");
+            System.out.println((i + 1) + ". " + mao.get(i).getCarta().getNome() + " |força:" + mao.get(i).getCarta().getForca() + " |inteligência: " + mao.get(i).getCarta().getInteligencia() + " |velocidade: " + mao.get(i).getCarta().getVelocidade() + "|");
         }
         int escolha = scanner.nextInt();
 

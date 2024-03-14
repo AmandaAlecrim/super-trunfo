@@ -3,6 +3,7 @@ package com.supertrunfo.dao;
 import com.supertrunfo.exceptions.ForcaExcedidaException;
 import com.supertrunfo.exceptions.NomeDuplicadoException;
 import com.supertrunfo.model.Carta;
+import com.supertrunfo.model.Partida;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -22,12 +23,15 @@ public class CartaDAO extends BaseDAO{
             throw new NomeDuplicadoException("Já existe uma carta com o nome '" + carta.getNome() + "'.");
         }
 
-        String sql = "INSERT INTO carta (nome, forca, inteligencia, velocidade) VALUES (?, ?, ?, ?)";
+        buscarProximoValorSequence(carta);
+
+        String sql = "INSERT INTO carta (nome, forca, inteligencia, velocidade, id) VALUES (?, ?, ?, ?, ?)";
         PreparedStatement ps = conexao.prepareStatement(sql);
         ps.setString(1, carta.getNome());
         ps.setInt(2, carta.getForca());
         ps.setInt(3, carta.getInteligencia());
         ps.setInt(4, carta.getVelocidade());
+        ps.setInt(5, carta.getId());
         ps.executeUpdate();
         ps.close();
     }
@@ -115,6 +119,16 @@ public class CartaDAO extends BaseDAO{
         rs.close();
         ps.close();
         return todasCartas;
+    }
+
+    public void buscarProximoValorSequence(Carta carta) throws SQLException {
+        String sqlid = "SELECT nextval('carta_id_seq')";
+        PreparedStatement ps1 = conexao.prepareStatement(sqlid);
+        ResultSet rs = ps1.executeQuery();
+        if (rs.next()) {
+            int id = rs.getInt(1);
+            carta.setId(id);
+        }
     }
 
 }
