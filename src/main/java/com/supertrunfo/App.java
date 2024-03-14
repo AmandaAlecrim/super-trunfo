@@ -1,6 +1,7 @@
 package com.supertrunfo;
 
 import com.supertrunfo.dao.CartaDAO;
+import com.supertrunfo.dao.PartidaDAO;
 import com.supertrunfo.model.Carta;
 import com.supertrunfo.exceptions.ForcaExcedidaException;
 import com.supertrunfo.exceptions.NomeDuplicadoException;
@@ -16,6 +17,7 @@ public class App {
         Connection conexao = null;
         try {
             CartaDAO cartaDAO = new CartaDAO();
+            PartidaDAO partidaDAO = new PartidaDAO();
 
             // Obter todas as cartas do banco de dados
             List<Carta> todasCartas = new ArrayList<>();
@@ -35,7 +37,7 @@ public class App {
             }
 
             // iniciando partida
-            Jogo jogo = new Jogo(baralho);
+            Jogo jogo = new Jogo(baralho, partidaDAO);
             jogo.iniciarPartida();
 
 //            inserirNovaCarta(cartaDAO);
@@ -65,20 +67,17 @@ public class App {
         cartaDAO.inserirCarta(novaCarta);
     }
 
-    // Método para buscar uma carta por ID
     public static void buscarCartaPorId(CartaDAO cartaDAO) throws SQLException {
         Carta cartaRecuperada = cartaDAO.buscarPorId(1);
         System.out.println("Carta recuperada: " + cartaRecuperada);
     }
 
-    // Método para editar uma carta
     public static void editarCarta(CartaDAO cartaDAO) throws SQLException, ForcaExcedidaException {
         Carta cartaRecuperada = cartaDAO.buscarPorId(1);
         cartaRecuperada.setNome("Nova Carta Teste");
         cartaDAO.atualizarCarta(cartaRecuperada);
     }
 
-    // Método para excluir uma carta
     public static void excluirCarta(CartaDAO cartaDAO) throws SQLException {
         cartaDAO.excluirCarta(1);
     }

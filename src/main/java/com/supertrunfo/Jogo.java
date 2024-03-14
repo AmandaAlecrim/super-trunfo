@@ -1,7 +1,10 @@
 package com.supertrunfo;
 
+import com.supertrunfo.dao.PartidaDAO;
 import com.supertrunfo.model.Carta;
+import com.supertrunfo.model.Partida;
 
+import java.sql.SQLException;
 import java.util.*;
 
 public class Jogo {
@@ -12,17 +15,29 @@ public class Jogo {
     private int rodadasVencidasCPU;
     private int rodadasEmpatadas;
     private List<String> atributosDisponiveis = new ArrayList<>();
+    private PartidaDAO partidaDAO;
+    private Partida partida;
 
-    public Jogo(List<Carta> baralho) {
+    public Jogo(List<Carta> baralho, PartidaDAO partidaDAO) {
         this.baralho = baralho;
         this.maoJogador = new ArrayList<>();
         this.maoCPU = new ArrayList<>();
+        this.partidaDAO = partidaDAO;
+        this.partida = new Partida();
     }
 
     public void iniciarPartida() {
         atributosDisponiveis.add("Força");
         atributosDisponiveis.add("Inteligência");
         atributosDisponiveis.add("Velocidade");
+
+        partida.setData(new Date());
+
+        try {
+            partidaDAO.inserirPartida(partida);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // Distribuir cartas para o jogador e CPU
         for (int i = 0; i < 3; i++) {
@@ -36,6 +51,10 @@ public class Jogo {
             jogarRodada();
         }
 
+        partida.setRoundsVencidosJogador(rodadasVencidasJogador);
+        partida.setRoundsVencidosCPU(rodadasVencidasCPU);
+        partida.setRoundsEmpatados(rodadasEmpatadas);
+
         // Verificar o vencedor da partida
         if (rodadasVencidasJogador > rodadasVencidasCPU) {
             System.out.println("Você venceu a partida!");
@@ -44,12 +63,33 @@ public class Jogo {
         } else {
             System.out.println("A partida terminou em empate!");
         }
+        partida.setResultado("Partida concluída.");
+        try {
+            partidaDAO.atualizarPartida(partida);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     private void jogarRodada() {
-        // Escolher um atributo aleatório para jogar
-        int indiceAtributo = escolherAtributo(atributosDisponiveis);
+        // Escolher um atributo para jogar
+        int indiceAtributo = escolherAtributo(partida.isForcaUtilizada(), partida.isInteligenciaUtilizada(), partida.isVelocidadeUtilizada());
+
+        // Adicionar atributo a partida
         String atributo = atributosDisponiveis.get(indiceAtributo);
+        if (atributo.equals("Força")) {
+            partida.setForcaUtilizada(true);
+        } else if (atributo.equals("Inteligência")) {
+            partida.setInteligenciaUtilizada(true);
+        } else if (atributo.equals("Velocidade")) {
+            partida.setVelocidadeUtilizada(true);
+        }
+        try {
+            partidaDAO.atualizarPartida(partida);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         System.out.println("Você escolheu o atributo: " + atributo);
         atributosDisponiveis.remove(indiceAtributo);
 
@@ -77,14 +117,27 @@ public class Jogo {
         }
     }
 
-    private int escolherAtributo(List<String> atributosDisponiveis) {
+    private int escolherAtributo(boolean forcaUtilizada, boolean inteligenciaUtilizada, boolean velocidadeUtilizada) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o atributo: ");
-        for (int i = 0; i < atributosDisponiveis.size(); i++) {
-            System.out.println((i + 1) + ". " + atributosDisponiveis.get(i));
+        int opcao = 0;
+        if (!forcaUtilizada) {
+            System.out.println((++opcao) + ". Força");
+        }
+        if (!inteligenciaUtilizada) {
+            System.out.println((++opcao) + ". Inteligência");
+        }
+        if (!velocidadeUtilizada) {
+            System.out.println((++opcao) + ". Velocidade");
         }
         int atributo = scanner.nextInt();
-        return atributo -1;
+
+        while (atributo < 1 || atributo > opcao) {
+            System.out.println("Opção inválida. Escolha novamente: ");
+            atributo = scanner.nextInt();
+        }
+
+        return atributo - 1;
     }
 
     private Carta escolherCarta(List<Carta> mao) {
@@ -94,6 +147,12 @@ public class Jogo {
             System.out.println((i + 1) + ". " + mao.get(i).getNome() + " |força:" + mao.get(i).getForca() + " |inteligência: " + mao.get(i).getInteligencia() + " |velocidade: " + mao.get(i).getVelocidade() + "|");
         }
         int escolha = scanner.nextInt();
+
+        while (escolha < 1 || escolha > 3) {
+            System.out.println("Opção inválida. Escolha novamente: ");
+            escolha = scanner.nextInt();
+        }
+
         return mao.remove(escolha - 1);
     }
 }
