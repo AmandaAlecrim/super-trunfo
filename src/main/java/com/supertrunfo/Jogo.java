@@ -104,7 +104,7 @@ public class Jogo {
         int valorAtributoCPU = 0;
 
         // Verificando o caractere de atributo
-        if (atributo == 'F') {
+        if (atributo == 'F' && !partida.isForcaUtilizada()) {
             valorAtributoJogador = cartaJogador.getCarta().getForca();
             cartaJogador.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
@@ -112,7 +112,7 @@ public class Jogo {
             cartaCPU.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
             partida.setForcaUtilizada(true);
-        } else if (atributo == 'I') {
+        } else if (atributo == 'I' && !partida.isInteligenciaUtilizada()) {
             valorAtributoJogador = cartaJogador.getCarta().getInteligencia();
             cartaJogador.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
@@ -120,7 +120,7 @@ public class Jogo {
             cartaCPU.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
             partida.setInteligenciaUtilizada(true);
-        } else if (atributo == 'V') {
+        } else if (atributo == 'V' && !partida.isVelocidadeUtilizada()) {
             valorAtributoJogador = cartaJogador.getCarta().getVelocidade();
             cartaJogador.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
@@ -162,6 +162,16 @@ public class Jogo {
         }
         char opcao = scanner.next().charAt(0);
 
+        if (opcao == 'F' && partida.isForcaUtilizada()) {
+            System.out.println("Força já foi utilizada.");
+            opcao = scanner.next().charAt(0);
+        } else if (opcao == 'I' && partida.isInteligenciaUtilizada()) {
+            System.out.println("Inteligência já foi utilizada.");
+            opcao = scanner.next().charAt(0);
+        } else if (opcao == 'V' && partida.isVelocidadeUtilizada()) {
+            System.out.println("Velocidade já foi utilizada.");
+            opcao = scanner.next().charAt(0);
+        }
         while (opcao != 'F' && opcao != 'I' && opcao != 'V') {
             System.out.println("O caractere inserido não é válido.");
             opcao = scanner.next().charAt(0);
