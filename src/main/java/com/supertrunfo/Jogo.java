@@ -59,6 +59,7 @@ public class Jogo {
 
         // Iniciar rodadas
         for (int rodada = 1; rodada <= 3; rodada++) {
+            System.out.println("---------------------");
             System.out.println("Rodada " + rodada);
             jogarRodada();
         }
@@ -78,19 +79,26 @@ public class Jogo {
     }
 
     private void jogarRodada() throws SQLException {
+
+        // Mostrar cartas jogador
+        System.out.println("\nSuas cartas:\n");
+        for (int i = 0; i < maoJogador.size(); i++) {
+            System.out.println(maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade() + "\n");
+        }
+
         // Escolher um atributo para jogar
         char atributo = escolherAtributo(partida);
         partidaDAO.atualizarPartida(partida);
 
         // Jogador joga uma carta
         CartaPartida cartaJogador = escolherCarta(maoJogador);
-        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getCarta().getNome() + " |força:" + cartaJogador.getCarta().getForca() + " |inteligência: " + cartaJogador.getCarta().getInteligencia() + " |velocidade: " + cartaJogador.getCarta().getVelocidade() + "|");
+        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getCarta().getNome() + "\nFOR:\t" + cartaJogador.getCarta().getForca() + "\nINT:\t" + cartaJogador.getCarta().getInteligencia() + "\nVEL:\t" + cartaJogador.getCarta().getVelocidade() + "\n");
 
         // CPU joga uma carta
         Random random = new Random();
         int indiceCartaCPU = random.nextInt(maoCPU.size());
         CartaPartida cartaCPU = maoCPU.remove(indiceCartaCPU);
-        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getCarta().getNome() + " |força:" + cartaCPU.getCarta().getForca() + " |inteligência: " + cartaCPU.getCarta().getInteligencia() + " |velocidade: " + cartaCPU.getCarta().getVelocidade() + "|");
+        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getCarta().getNome() + "\nFOR:\t" + cartaCPU.getCarta().getForca() + "\nINT:\t" + cartaCPU.getCarta().getInteligencia() + "\nVEL:\t" + cartaCPU.getCarta().getVelocidade() + "\n");
 
         int valorAtributoJogador = 0;
         int valorAtributoCPU = 0;
@@ -105,18 +113,18 @@ public class Jogo {
             cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
             partida.setForcaUtilizada(true);
         } else if (atributo == 'I') {
-            valorAtributoJogador = cartaJogador.getCarta().getForca();
+            valorAtributoJogador = cartaJogador.getCarta().getInteligencia();
             cartaJogador.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
-            valorAtributoCPU = cartaCPU.getCarta().getForca();
+            valorAtributoCPU = cartaCPU.getCarta().getInteligencia();
             cartaCPU.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
             partida.setInteligenciaUtilizada(true);
         } else if (atributo == 'V') {
-            valorAtributoJogador = cartaJogador.getCarta().getForca();
+            valorAtributoJogador = cartaJogador.getCarta().getVelocidade();
             cartaJogador.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaJogador);
-            valorAtributoCPU = cartaCPU.getCarta().getForca();
+            valorAtributoCPU = cartaCPU.getCarta().getVelocidade();
             cartaCPU.setUtilizada(true);
             cartaPartidaDAO.atualizarCartaPartida(cartaCPU);
             partida.setVelocidadeUtilizada(true);
@@ -165,7 +173,7 @@ public class Jogo {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o número da carta que deseja jogar:");
         for (int i = 0; i < mao.size(); i++) {
-            System.out.println((i + 1) + ". " + mao.get(i).getCarta().getNome() + " |força:" + mao.get(i).getCarta().getForca() + " |inteligência: " + mao.get(i).getCarta().getInteligencia() + " |velocidade: " + mao.get(i).getCarta().getVelocidade() + "|");
+            System.out.println((i + 1) + ". " + mao.get(i).getCarta().getNome() + "\nFOR:\t" + mao.get(i).getCarta().getForca() + "\nINT:\t" + mao.get(i).getCarta().getInteligencia() + "\nVEL:\t" + mao.get(i).getCarta().getVelocidade() + "\n");
         }
         int escolha = scanner.nextInt();
 
