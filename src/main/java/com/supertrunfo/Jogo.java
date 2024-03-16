@@ -16,7 +16,6 @@ public class Jogo {
     private int rodadasVencidasJogador;
     private int rodadasVencidasCPU;
     private int rodadasEmpatadas;
-    private List<String> atributosDisponiveis = new ArrayList<>();
     private PartidaDAO partidaDAO;
     private Partida partida;
     private CartaPartidaDAO cartaPartidaDAO;
@@ -28,11 +27,7 @@ public class Jogo {
         this.cartaPartidaDAO = new CartaPartidaDAO();
     }
 
-    public void iniciarPartida() throws SQLException {
-        atributosDisponiveis.add("Força");
-        atributosDisponiveis.add("Inteligência");
-        atributosDisponiveis.add("Velocidade");
-
+    public void iniciarPartida() throws SQLException, InterruptedException {
         partida.setData(new Date());
         partidaDAO.inserirPartida(partida);
 
@@ -59,31 +54,40 @@ public class Jogo {
 
         // Iniciar rodadas
         for (int rodada = 1; rodada <= 3; rodada++) {
-            System.out.println("---------------------");
-            System.out.println("Rodada " + rodada);
+            divisoria(30, '-');
+            System.out.println("\nRodada " + rodada);
             jogarRodada();
         }
 
         // Verificar o vencedor da partida
+        System.out.print('*');
+        divisoria(30, '-');
+        System.out.println('*');
         if (rodadasVencidasJogador > rodadasVencidasCPU) {
-            System.out.println("Você venceu a partida!");
+            System.out.println("|    Você venceu a partida!    |");
             partida.setResultado("Você venceu a partida!");
         } else if (rodadasVencidasJogador < rodadasVencidasCPU) {
-            System.out.println("CPU venceu a partida!");
+            System.out.println("|     CPU venceu a partida!    |");
             partida.setResultado("CPU venceu a partida!");
         } else {
-            System.out.println("A partida terminou em empate!");
+            System.out.println("| A partida terminou em empate!|");
             partida.setResultado("A partida terminou em empate!");
         }
+        System.out.print('*');
+        divisoria(30, '-');
+        System.out.print("*\n");
         partidaDAO.atualizarPartida(partida);
     }
 
-    private void jogarRodada() throws SQLException {
+    private void jogarRodada() throws SQLException, InterruptedException {
 
         // Mostrar cartas jogador
         System.out.println("\nSuas cartas:\n");
         for (int i = 0; i < maoJogador.size(); i++) {
-            System.out.println(maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade() + "\n");
+            divisoria(20, '*');
+            System.out.println("\n"+ maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade());
+            divisoria(20, '*');
+            System.out.println("\n");
         }
 
         // Escolher um atributo para jogar
@@ -91,12 +95,20 @@ public class Jogo {
         partidaDAO.atualizarPartida(partida);
 
         // Jogador joga uma carta
-        CartaPartida cartaJogador = escolherCarta(maoJogador);
-        System.out.println("Jogador jogou a carta:\n    " + cartaJogador.getCarta().getNome() + "\nFOR:\t" + cartaJogador.getCarta().getForca() + "\nINT:\t" + cartaJogador.getCarta().getInteligencia() + "\nVEL:\t" + cartaJogador.getCarta().getVelocidade() + "\n");
+        CartaPartida cartaJogador = escolherCarta(maoJogador, atributo);
+        System.out.println("Jogador jogou a carta:");
+        divisoria(22,'*');
+        System.out.println("\n\t" + cartaJogador.getCarta().getNome() + "\nFOR:\t" + cartaJogador.getCarta().getForca() + "\nINT:\t" + cartaJogador.getCarta().getInteligencia() + "\nVEL:\t" + cartaJogador.getCarta().getVelocidade());
+        divisoria(22,'*');
+        System.out.println("\n");
 
         // CPU joga uma carta
         CartaPartida cartaCPU = escolheCartaCPU(maoCPU, atributo);
-        System.out.println("CPU jogou a carta:\n    " + cartaCPU.getCarta().getNome() + "\nFOR:\t" + cartaCPU.getCarta().getForca() + "\nINT:\t" + cartaCPU.getCarta().getInteligencia() + "\nVEL:\t" + cartaCPU.getCarta().getVelocidade() + "\n");
+        System.out.println("CPU jogou a carta:");
+        divisoria(22,'*');
+        System.out.println("\n\t" + cartaCPU.getCarta().getNome() + "\nFOR:\t" + cartaCPU.getCarta().getForca() + "\nINT:\t" + cartaCPU.getCarta().getInteligencia() + "\nVEL:\t" + cartaCPU.getCarta().getVelocidade());
+        divisoria(22,'*');
+        System.out.println("\n");
 
         int valorAtributoJogador = 0;
         int valorAtributoCPU = 0;
@@ -130,19 +142,20 @@ public class Jogo {
 
         // Comparar atributos
         if (valorAtributoJogador > valorAtributoCPU) {
-            System.out.println("Você venceu a rodada!");
+            System.out.println("Você venceu a rodada!\n");
             rodadasVencidasJogador++;
         } else if (valorAtributoJogador < valorAtributoCPU) {
-            System.out.println("CPU venceu a rodada!");
+            System.out.println("CPU venceu a rodada!\n");
             rodadasVencidasCPU++;
         } else {
-            System.out.println("Rodada empatada!");
+            System.out.println("Rodada empatada!\n");
             rodadasEmpatadas++;
         }
         partida.setRoundsVencidosJogador(rodadasVencidasJogador);
         partida.setRoundsVencidosCPU(rodadasVencidasCPU);
         partida.setRoundsEmpatados(rodadasEmpatadas);
         partidaDAO.atualizarPartida(partida);
+        Thread.sleep(3500);
     }
 
     private char escolherAtributo(Partida partida) {
@@ -171,11 +184,17 @@ public class Jogo {
         return opcao;
     }
 
-    private CartaPartida escolherCarta(List<CartaPartida> mao) {
+    private CartaPartida escolherCarta(List<CartaPartida> mao, char atributo) {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Escolha o número da carta que deseja jogar:");
         for (int i = 0; i < mao.size(); i++) {
-            System.out.println((i + 1) + ". " + mao.get(i).getCarta().getNome() + "\nFOR:\t" + mao.get(i).getCarta().getForca() + "\nINT:\t" + mao.get(i).getCarta().getInteligencia() + "\nVEL:\t" + mao.get(i).getCarta().getVelocidade() + "\n");
+            System.out.println((i + 1) + ".");
+            System.out.print("\t");
+            divisoria(22, '*');
+            System.out.println("\n\t" + mao.get(i).getCarta().getNome() + "\n\t" + cartaUmAtributo(mao.get(i).getCarta(), atributo));
+            System.out.print("\t");
+            divisoria(22, '*');
+            System.out.println("\n");
         }
         int escolha = scanner.nextInt();
 
@@ -217,6 +236,26 @@ public class Jogo {
             }
         }
         return mao.remove(indicemelhorCarta);
+    }
+
+    public String cartaUmAtributo (Carta carta, char atributo) {
+        String resultado = "";
+        if (atributo == 'F') {
+            resultado = "FOR:\t" + carta.getForca();
+        }
+        if (atributo == 'I') {
+            resultado = "INT:\t" + carta.getInteligencia();
+        }
+        if (atributo == 'V') {
+            resultado = "VEL:\t" + carta.getVelocidade();
+        }
+        return resultado;
+    }
+
+    public  void divisoria (int limite, char caractere) {
+        for (int i = 0; i < limite; i++) {
+            System.out.print(caractere);
+        }
     }
 }
 
