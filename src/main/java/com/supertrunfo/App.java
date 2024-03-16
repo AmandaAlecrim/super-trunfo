@@ -23,12 +23,7 @@ public class App {
             char opcao = 'O';
 
             // Obter todas as cartas do banco de dados
-            List<Carta> todasCartas = new ArrayList<>();
-            try {
-                todasCartas = cartaDAO.obterTodasCartas();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+            List<Carta> todasCartas =  cartaDAO.obterTodasCartas();
 
             novoJogo(todasCartas,  partidaDAO);
 
