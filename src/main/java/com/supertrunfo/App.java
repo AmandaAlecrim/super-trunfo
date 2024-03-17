@@ -6,6 +6,7 @@ import com.supertrunfo.model.Carta;
 import com.supertrunfo.exceptions.ForcaExcedidaException;
 import com.supertrunfo.exceptions.NomeDuplicadoException;
 
+import javax.swing.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public class App {
             CartaDAO cartaDAO = new CartaDAO();
             PartidaDAO partidaDAO = new PartidaDAO();
             Scanner scanner = new Scanner(System.in);
-            char opcao = 'O';
+            char opcao = ' ';
 
             // Obter todas as cartas do banco de dados
             List<Carta> todasCartas =  cartaDAO.obterTodasCartas();
@@ -28,17 +29,26 @@ public class App {
             novoJogo(todasCartas,  partidaDAO);
 
             while (opcao != 'N') {
-                System.out.println("\nDeseja jogar outra partida?\nSim: S\nNão: N");
-                opcao = scanner.next().charAt(0);
-                if (opcao == 'S') {
-                    novoJogo(todasCartas,  partidaDAO);
-                } else if (opcao != 'N') {
-                    System.out.println("Opção inválida.");
+                String input = JOptionPane.showInputDialog(null, "Deseja jogar outra partida?\nSim: S\nNão: N");
+
+                // Verifique se o usuário inseriu apenas um caractere
+                if (input != null && input.length() == 1) {
+                    opcao = input.charAt(0);
+
+                    if (opcao == 'S') {
+                        novoJogo(todasCartas, partidaDAO);
+                    } else if (opcao != 'N') {
+                        JOptionPane.showMessageDialog(null, "Opção inválida.");
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(null, "Por favor, insira apenas um caractere.");
                 }
             }
+
             if (opcao == 'N') {
                 System.exit(0);
             }
+
 
         } catch (Exception e) {
             e.printStackTrace();

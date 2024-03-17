@@ -6,6 +6,7 @@ import com.supertrunfo.model.Carta;
 import com.supertrunfo.model.CartaPartida;
 import com.supertrunfo.model.Partida;
 
+import javax.swing.JOptionPane;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -54,61 +55,52 @@ public class Jogo {
 
         // Iniciar rodadas
         for (int rodada = 1; rodada <= 3; rodada++) {
-            divisoria(30, '-');
-            System.out.println("\nRodada " + rodada);
+            JOptionPane.showMessageDialog(null, "\nRodada " + rodada);
             jogarRodada();
         }
 
         // Verificar o vencedor da partida
-        System.out.print('*');
-        divisoria(30, '-');
-        System.out.println('*');
         if (rodadasVencidasJogador > rodadasVencidasCPU) {
-            System.out.println("|    Você venceu a partida!    |");
             partida.setResultado("Você venceu a partida!");
         } else if (rodadasVencidasJogador < rodadasVencidasCPU) {
-            System.out.println("|     CPU venceu a partida!    |");
             partida.setResultado("CPU venceu a partida!");
         } else {
-            System.out.println("| A partida terminou em empate!|");
             partida.setResultado("A partida terminou em empate!");
         }
-        System.out.print('*');
-        divisoria(30, '-');
-        System.out.print("*\n");
+        JOptionPane.showMessageDialog(null, partida.getResultado());
         partidaDAO.atualizarPartida(partida);
     }
 
     private void jogarRodada() throws SQLException, InterruptedException {
 
         // Mostrar cartas jogador
-        System.out.println("\nSuas cartas:\n");
+        String message = "\nSuas cartas:\n";
         for (int i = 0; i < maoJogador.size(); i++) {
-            divisoria(20, '*');
-            System.out.println("\n"+ maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade());
-            divisoria(20, '*');
-            System.out.println("\n");
+            message += "\n" + maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade() + "\n";
         }
+        JOptionPane.showMessageDialog(null, message);
 
         // Escolher um atributo para jogar
         char atributo = escolherAtributo(partida);
         partidaDAO.atualizarPartida(partida);
 
-        // Jogador joga uma carta
+        // Jogador e CPU jogam uma carta
         CartaPartida cartaJogador = escolherCarta(maoJogador, atributo);
-        System.out.println("Jogador jogou a carta:");
-        divisoria(22,'*');
-        System.out.println("\n\t" + cartaJogador.getCarta().getNome() + "\nFOR:\t" + cartaJogador.getCarta().getForca() + "\nINT:\t" + cartaJogador.getCarta().getInteligencia() + "\nVEL:\t" + cartaJogador.getCarta().getVelocidade());
-        divisoria(22,'*');
-        System.out.println("\n");
-
-        // CPU joga uma carta
         CartaPartida cartaCPU = escolheCartaCPU(maoCPU, atributo);
-        System.out.println("CPU jogou a carta:");
-        divisoria(22,'*');
-        System.out.println("\n\t" + cartaCPU.getCarta().getNome() + "\nFOR:\t" + cartaCPU.getCarta().getForca() + "\nINT:\t" + cartaCPU.getCarta().getInteligencia() + "\nVEL:\t" + cartaCPU.getCarta().getVelocidade());
-        divisoria(22,'*');
-        System.out.println("\n");
+
+        // Mostrar cartas jogador e CPU
+        String cartasJogadas = "Jogador jogou a carta:\n\n" +
+                cartaJogador.getCarta().getNome() + "\n" +
+                "FOR: " + cartaJogador.getCarta().getForca() + "\n" +
+                "INT: " + cartaJogador.getCarta().getInteligencia() + "\n" +
+                "VEL: " + cartaJogador.getCarta().getVelocidade() + "\n\n" +
+                "CPU jogou a carta:\n\n" +
+                cartaCPU.getCarta().getNome() + "\n" +
+                "FOR: " + cartaCPU.getCarta().getForca() + "\n" +
+                "INT: " + cartaCPU.getCarta().getInteligencia() + "\n" +
+                "VEL: " + cartaCPU.getCarta().getVelocidade() + "\n";
+
+        JOptionPane.showMessageDialog(null, cartasJogadas);
 
         int valorAtributoJogador = 0;
         int valorAtributoCPU = 0;
@@ -142,67 +134,86 @@ public class Jogo {
 
         // Comparar atributos
         if (valorAtributoJogador > valorAtributoCPU) {
-            System.out.println("Você venceu a rodada!\n");
+            JOptionPane.showMessageDialog(null, "Você venceu a rodada!\n");
             rodadasVencidasJogador++;
         } else if (valorAtributoJogador < valorAtributoCPU) {
-            System.out.println("CPU venceu a rodada!\n");
+            JOptionPane.showMessageDialog(null, "CPU venceu a rodada!\n");
             rodadasVencidasCPU++;
         } else {
-            System.out.println("Rodada empatada!\n");
+            JOptionPane.showMessageDialog(null, "Rodada empatada!\n");
             rodadasEmpatadas++;
         }
         partida.setRoundsVencidosJogador(rodadasVencidasJogador);
         partida.setRoundsVencidosCPU(rodadasVencidasCPU);
         partida.setRoundsEmpatados(rodadasEmpatadas);
         partidaDAO.atualizarPartida(partida);
-        Thread.sleep(3500);
     }
 
     private char escolherAtributo(Partida partida) {
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Escolha o atributo: ");
+        String mensagem = "Escolha o atributo:\n";
         if (!partida.isForcaUtilizada()) {
-            System.out.println("F: Força");
+            mensagem += "F: Força\n";
         }
         if (!partida.isInteligenciaUtilizada()) {
-            System.out.println("I: Inteligência");
+            mensagem += "I: Inteligência\n";
         }
         if (!partida.isVelocidadeUtilizada()) {
-            System.out.println("V: Velocidade");
+            mensagem += "V: Velocidade\n";
         }
-        char opcao = scanner.next().charAt(0);
 
-        while ((opcao == 'F' && partida.isForcaUtilizada()) ||
+        char opcao;
+        String input = JOptionPane.showInputDialog(null, mensagem);
+
+        // Verifica se o input é nulo ou vazio
+        while (input == null || input.isEmpty() || input.length() != 1 || (opcao = input.charAt(0)) == 'F' && partida.isForcaUtilizada() ||
                 (opcao == 'I' && partida.isInteligenciaUtilizada()) ||
                 (opcao == 'V' && partida.isVelocidadeUtilizada()) ||
                 (opcao != 'F' && opcao != 'I' && opcao != 'V')) {
-            System.out.println("Atributo já foi utilizado ou é inválido.");
-            System.out.println("Re-insira o atributo:");
-            opcao = scanner.next().charAt(0);
+            if (input == null) { // Se o usuário clicou em Cancelar ou fechou a janela
+                JOptionPane.showMessageDialog(null, "Jogo encerrado.");
+                System.exit(0); // Encerra o programa
+            }
+            JOptionPane.showMessageDialog(null, "Atributo já foi utilizado ou é inválido.");
+            input = JOptionPane.showInputDialog(null, mensagem);
         }
+
         return opcao;
+
     }
 
     private CartaPartida escolherCarta(List<CartaPartida> mao, char atributo) {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Escolha o número da carta que deseja jogar:");
+        String message = "Escolha o número da carta que deseja jogar:\n\n";
         for (int i = 0; i < mao.size(); i++) {
-            System.out.println((i + 1) + ".");
-            System.out.print("\t");
-            divisoria(22, '*');
-            System.out.println("\n\t" + mao.get(i).getCarta().getNome() + "\n\t" + cartaUmAtributo(mao.get(i).getCarta(), atributo));
-            System.out.print("\t");
-            divisoria(22, '*');
-            System.out.println("\n");
-        }
-        int escolha = scanner.nextInt();
-
-        while (escolha < 1 || escolha > mao.size()) {
-            System.out.println("Opção inválida. Escolha novamente: ");
-            escolha = scanner.nextInt();
+            message += (i + 1) + ".\n" + mao.get(i).getCarta().getNome() + "\n" + cartaUmAtributo(mao.get(i).getCarta(), atributo) + "\n\n";
         }
 
+        int escolha = 0;
+        boolean inputValido = false;
+
+        while (!inputValido) {
+            String input = JOptionPane.showInputDialog(null, message);
+
+            // Verifica se o input é nulo ou vazio
+            if (input == null || input.isEmpty()) {
+                if (input == null) { // Se o usuário clicou em Cancelar ou fechou a janela
+                    JOptionPane.showMessageDialog(null, "Jogo encerrado.");
+                    System.exit(0); // Encerra o programa
+                }
+                JOptionPane.showMessageDialog(null, "Nenhuma opção selecionada. Escolha novamente: ");
+                continue; // Reinicia o loop para solicitar uma nova entrada
+            }
+            try {
+                // Tenta converter a entrada em um número inteiro
+                escolha = Integer.parseInt(input);
+                if (escolha >= 1 && escolha <= mao.size()) {
+                    inputValido = true;
+                } else {
+                    JOptionPane.showMessageDialog(null, "Opção inválida. Escolha novamente: ");
+                }
+            } catch (NumberFormatException e) {
+                JOptionPane.showMessageDialog(null, "Entrada inválida. Insira um número válido: ");
+            }
+        }
         return mao.remove(escolha - 1);
     }
 
@@ -238,7 +249,7 @@ public class Jogo {
         return mao.remove(indicemelhorCarta);
     }
 
-    public String cartaUmAtributo (Carta carta, char atributo) {
+    public String cartaUmAtributo(Carta carta, char atributo) {
         String resultado = "";
         if (atributo == 'F') {
             resultado = "FOR:\t" + carta.getForca();
@@ -251,11 +262,4 @@ public class Jogo {
         }
         return resultado;
     }
-
-    public  void divisoria (int limite, char caractere) {
-        for (int i = 0; i < limite; i++) {
-            System.out.print(caractere);
-        }
-    }
 }
-
