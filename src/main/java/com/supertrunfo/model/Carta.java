@@ -61,4 +61,40 @@ public class Carta {
     public void setVelocidade(int velocidade) {
         this.velocidade = velocidade;
     }
+
+    @Override
+    public String toString() {
+        return "<html>" +
+                "<p style=\"text-align: center;\">" +
+                nome + "<br>" +
+                "FOR:&nbsp;&nbsp;&nbsp;" + forca + "<br>" +
+                "INT:&nbsp;&nbsp;&nbsp;&nbsp;" + inteligencia + "<br>" +
+                "VEL:&nbsp;&nbsp;&nbsp;" + velocidade + "</p>" +
+                "</html>";
+    }
+
+    public String escreveCarta(String atributo) {
+        String carta =  "<html>" +
+                            "<p style=\"text-align: center;\">" +
+                                nome + "<br>";
+        if (atributo == "Força"){
+            carta = carta +     "FOR:&nbsp;&nbsp;&nbsp;" + forca + "<br>";
+        }
+        if (atributo == "Inteligência"){
+            carta = carta +     "INT:&nbsp;&nbsp;&nbsp;&nbsp;" + inteligencia + "<br>";
+        }
+        if (atributo == "Velocidade"){
+            carta = carta +     "VEL:&nbsp;&nbsp;&nbsp;" + velocidade + "<br>";
+        }
+        carta = carta +     "</p>" +
+                        "</html>";
+        return carta;
+    }
+
+    public Carta(String nome, int forca, int inteligencia, int velocidade) {
+        this.nome = nome;
+        this.forca = forca;
+        this.inteligencia = inteligencia;
+        this.velocidade = velocidade;
+    }
 }
