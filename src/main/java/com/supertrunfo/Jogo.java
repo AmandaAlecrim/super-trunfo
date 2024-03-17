@@ -76,7 +76,9 @@ public class Jogo {
         // Mostrar cartas jogador
         String message = "\nSuas cartas:\n";
         for (int i = 0; i < maoJogador.size(); i++) {
+            message += "\n********************";
             message += "\n" + maoJogador.get(i).getCarta().getNome() + "\nFOR:\t" + maoJogador.get(i).getCarta().getForca() + "\nINT:\t" + maoJogador.get(i).getCarta().getInteligencia() + "\nVEL:\t" + maoJogador.get(i).getCarta().getVelocidade() + "\n";
+            message += "********************\n";
         }
         JOptionPane.showMessageDialog(null, message);
 
@@ -90,15 +92,19 @@ public class Jogo {
 
         // Mostrar cartas jogador e CPU
         String cartasJogadas = "Jogador jogou a carta:\n\n" +
+                "********************\n" +
                 cartaJogador.getCarta().getNome() + "\n" +
                 "FOR: " + cartaJogador.getCarta().getForca() + "\n" +
                 "INT: " + cartaJogador.getCarta().getInteligencia() + "\n" +
-                "VEL: " + cartaJogador.getCarta().getVelocidade() + "\n\n" +
+                "VEL: " + cartaJogador.getCarta().getVelocidade() + "\n" +
+                "********************\n\n" +
                 "CPU jogou a carta:\n\n" +
+                "********************\n" +
                 cartaCPU.getCarta().getNome() + "\n" +
                 "FOR: " + cartaCPU.getCarta().getForca() + "\n" +
                 "INT: " + cartaCPU.getCarta().getInteligencia() + "\n" +
-                "VEL: " + cartaCPU.getCarta().getVelocidade() + "\n";
+                "VEL: " + cartaCPU.getCarta().getVelocidade() + "\n" +
+                "********************\n\n";
 
         JOptionPane.showMessageDialog(null, cartasJogadas);
 
@@ -184,7 +190,7 @@ public class Jogo {
     private CartaPartida escolherCarta(List<CartaPartida> mao, char atributo) {
         String message = "Escolha o número da carta que deseja jogar:\n\n";
         for (int i = 0; i < mao.size(); i++) {
-            message += (i + 1) + ".\n" + mao.get(i).getCarta().getNome() + "\n" + cartaUmAtributo(mao.get(i).getCarta(), atributo) + "\n\n";
+            message += (i + 1) + ".\n" + "********************\n" + mao.get(i).getCarta().getNome() + "\n" + cartaUmAtributo(mao.get(i).getCarta(), atributo) + "\n********************\n\n";
         }
 
         int escolha = 0;
