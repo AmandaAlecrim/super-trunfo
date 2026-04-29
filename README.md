@@ -1,7 +1,7 @@
 # Super Trunfo (Console)
 Jogo de Super Trunfo em terminal, com persistência em PostgreSQL via JDBC para registrar cartas e histórico de partidas.
 
-### Resumo curricular do projeto
+### Resumo do projeto
 - **Objetivo**: aplicar fundamentos de Java, modelagem de domínio e persistência relacional em um jogo por turnos (jogador vs CPU), registrando partidas e cartas utilizadas.
 
 - **Entregas (features)**:
@@ -23,7 +23,7 @@ Jogo de Super Trunfo em terminal, com persistência em PostgreSQL via JDBC para 
 - **Persistência**: JDBC (DAO manual, sem ORM).
 - **Banco**: PostgreSQL (driver `org.postgresql:postgresql`).
 
-### Arquitetura (estrutura do código)
+### Arquitetura
 - **`src/main/java/com/supertrunfo`**:
   - **`App`**: ponto de entrada; obtém cartas no banco e inicia novas partidas.
   - **`Jogo`**: orquestra a partida (rodadas, regras de escolha de atributo/carta, apuração de vencedor) e aciona persistência de partida/cartas jogadas.
@@ -35,7 +35,7 @@ Jogo de Super Trunfo em terminal, com persistência em PostgreSQL via JDBC para 
 - **`src/main/java/com/supertrunfo/exceptions`**:
   - Exceções de domínio para validações de consistência no cadastro de cartas.
 
-### Modelos (domínio)
+### Modelos
 - **`Carta`**:
   - `id`, `nome`, `forca`, `inteligencia`, `velocidade`
 - **`Partida`**:
@@ -46,13 +46,7 @@ Jogo de Super Trunfo em terminal, com persistência em PostgreSQL via JDBC para 
   - `id`, `doJogador`, `utilizada`
   - `carta`, `partida`
 
-### Endpoints (catálogo)
-- **Não aplicável**: este repositório não expõe API HTTP (não há controllers/rotas). A interação é via console.
-
 ### Qualidade e suporte operacional (visão curricular)
-- **Testes existentes**: não há suíte de testes automatizados versionada no repositório.
-- **Observabilidade/tooling**: não há endpoints de health/metrics (ex.: actuator) nem logging estruturado; saída principal é via console.
-- **Persistência (decisão de contexto)**:
+- **Persistência**:
   - PostgreSQL acessado por JDBC com SQL explícito e sequences (`nextval(...)`).
   - Configuração de conexão está embutida em `BaseDAO` (URL/usuário/senha), adequada para contexto educacional/demonstração, mas tipicamente externalizada em aplicações de produção.
-
